@@ -5,21 +5,21 @@
 class mt19937_64(object): # MT19937 64-bit variant of the Mersenne Twister prng
     def __init__(self,seed): # initializes the generator with a seed
         self.idx = 0
-        self.mt = [seed]*312
+        self.arr = [seed]*312
         for i in range(1,312):
-            self.mt[i] = 0xffffffffffffffff & (0x5851f42d4c957f2d * (self.mt[i-1] ^ self.mt[i-1]>>62) + i)
+            self.arr[i] = 0xffffffffffffffff & (0x5851f42d4c957f2d * (self.arr[i-1] ^ self.arr[i-1]>>62) + i)
     
     def generate(self): # generates 312 new numbers for extraction method
         for i in range(0,312):
-            y = (self.mt[i] & 0xffffffff80000000) + (self.mt[(i+1)%312] & 0x7fffffff)
-            self.mt[i] = self.mt[(i+156)%312] ^ y>>1
+            y = (self.arr[i] & 0xffffffff80000000) + (self.arr[(i+1)%312] & 0x7fffffff)
+            self.arr[i] = self.arr[(i+156)%312] ^ y>>1
             if (y%2 != 0):
-                self.mt[i] = self.mt[i] ^ 0xb5026f5aa96619e9
+                self.arr[i] = self.arr[i] ^ 0xb5026f5aa96619e9
     
     def extract(self): # extracts an integer from [0, 2**64-1]
         if (self.idx == 0):
             self.generate()
-        y = self.mt[self.idx]
+        y = self.arr[self.idx]
         y ^= y>>29 & 0x5555555555555555
         y ^= y<<17 & 0x71d67fffeda60000
         y ^= y<<37 & 0xfff7eee000000000
